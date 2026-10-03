@@ -1,0 +1,7 @@
+# Stable device names for the snake robot.
+# U2D2 (FTDI FT232H) -> /dev/dynamixel; set FTDI latency timer to 1 ms for fast Dynamixel round-trips.
+SUBSYSTEM=="tty", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6014", ATTRS{serial}=="FT89FDIW", SYMLINK+="dynamixel", MODE="0660", GROUP="dialout"
+ACTION=="add", SUBSYSTEM=="usb-serial", DRIVER=="ftdi_sio", ATTR{latency_timer}="1"
+
+# YDLidar G2 adapter (Silicon Labs CP2102) -> /dev/ydlidar
+SUBSYSTEM=="tty", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", SYMLINK+="ydlidar", MODE="0660", GROUP="dialout"
