@@ -11,12 +11,15 @@ from launch_ros.substitutions import FindPackageShare
 def generate_launch_description():
     params = LaunchConfiguration('params')
     static_tf = LaunchConfiguration('static_tf')
+    foxglove = LaunchConfiguration('foxglove')
     return LaunchDescription([
         DeclareLaunchArgument(
             'params',
             default_value=PathJoinSubstitution(
                 [FindPackageShare('snake_bringup'), 'config', 'ydlidar_g2.yaml'])),
         DeclareLaunchArgument('static_tf', default_value='true'),
+        # Headless Pi: view /scan from the laptop in Foxglove at ws://<pi-ip>:8765.
+        DeclareLaunchArgument('foxglove', default_value='true'),
         Node(
             package='ydlidar_ros2_driver',
             executable='ydlidar_ros2_driver_node',
@@ -34,5 +37,12 @@ def generate_launch_description():
             name='base_to_laser',
             arguments=['--frame-id', 'base_link', '--child-frame-id', 'laser'],
             condition=IfCondition(static_tf),
+        ),
+        Node(
+            package='foxglove_bridge',
+            executable='foxglove_bridge',
+            name='foxglove_bridge',
+            parameters=[{'port': 8765}],
+            condition=IfCondition(foxglove),
         ),
     ])
