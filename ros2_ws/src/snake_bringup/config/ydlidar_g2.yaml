@@ -1,0 +1,25 @@
+# YDLidar G2 (reports as G2B, model code 15, fw 3.5) on /dev/ydlidar (udev).
+ydlidar_ros2_driver_node:
+  ros__parameters:
+    port: /dev/ydlidar
+    frame_id: laser
+    ignore_array: ""
+    baudrate: 230400
+    lidar_type: 1            # triangulation
+    device_type: 0           # serial
+    sample_rate: 4           # stock G2.yaml value; the lidar still reports 5K
+    intensity: true
+    intensity_bit: 10        # stock value; the SDK auto-detects the real width (8) at startup
+    abnormal_check_count: 4
+    fixed_resolution: true   # fixed 530 beams/scan at 10 Hz
+    reversion: true
+    inverted: true
+    auto_reconnect: true
+    isSingleChannel: false
+    support_motor_dtr: false
+    angle_max: 180.0
+    angle_min: -180.0
+    range_max: 12.0          # G2 spec max
+    range_min: 0.12          # G2 spec min
+    frequency: 10.0
+    invalid_range_is_inf: false

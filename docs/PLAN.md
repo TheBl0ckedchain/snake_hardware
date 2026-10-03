@@ -38,9 +38,9 @@ it can plan against.
 ## Phases
 
 ### Phase 0 — Groundwork
-- [ ] udev rules for `/dev/dynamixel` and `/dev/ydlidar`.
+- [x] udev rules for `/dev/dynamixel` and `/dev/ydlidar` (`udev/`). FTDI latency timer → 1 ms.
 - [ ] Separate power for the servos (12 V) and for the Pi/lidar. Common ground.
-- [ ] ROS 2 workspace in this repo (`ros2_ws/src/...`). Python deps pinned. `snake_env` venv kept for standalone scripts.
+- [x] ROS 2 workspace in this repo (`ros2_ws/src/...`). Python deps pinned. `snake_env` venv kept for standalone scripts.
 
 **Done when:** both devices enumerate under fixed names after a reboot.
 
@@ -59,8 +59,8 @@ Next steps, to make it usable by SLAM and the NN:
 **Done when:** a teleop/keyboard node can drive the snake forward and back and turn left and right, and rviz shows the body moving live.
 
 ### Phase 2 — Lidar
-- [ ] Build **YDLidar-SDK** and **ydlidar_ros2_driver** from source (no Jazzy binaries). Config for the G2: 230400 baud, single-channel off, 10 Hz, range 0.12–12 m.
-- [ ] Publish `/scan` in the `laser` frame, attached via the URDF.
+- [x] Build **YDLidar-SDK** and **ydlidar_ros2_driver** from source (no Jazzy binaries). Config for the G2: 230400 baud, single-channel off, 10 Hz, range 0.12–12 m.
+- [x] Publish `/scan` in the `laser` frame (`ros2 launch snake_bringup lidar.launch.py`; static base_link→laser TF until the URDF exists), attached via the URDF.
 - [ ] Bench validation: static scans of a known room. Check range accuracy (tape-measure checks), angular offset, noise, and min/max range. Filter self-hits from the snake's own body (`laser_filters` angular/box filter).
 - [ ] Record rosbags: static, hand-carried, and on the moving snake.
 - [ ] Check scan distortion from the wiggle: compare scans while slithering against static scans. If it is significant, deskew or transform each scan using the joint states at its timestamp.
@@ -90,6 +90,9 @@ Interface contract (agree this with the NN side early):
 | → NN | `/goal_pose` | target point |
 
 - [ ] A sim-to-real check: run the same command sequence in sim and on the robot, and compare the trajectories.
+
+## Status log
+- 2026-10-04: lidar up. G2B fw 3.5, 9.7 Hz, 530 beams (0.68°), static noise ~3.5 mm median. The SDK occasionally aborts during startup intensity auto-detect, so the launch file respawns the driver.
 
 ## Immediate next steps
 1. Plug in the U2D2 and the lidar. Write the udev rules.
