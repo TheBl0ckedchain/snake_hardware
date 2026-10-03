@@ -7,6 +7,10 @@ HERE="$(cd "$(dirname "$0")/.." && pwd)"
 "$HERE/udev/install.sh"
 cat /sys/bus/usb-serial/devices/$(basename "$(readlink -f /dev/dynamixel)")/latency_timer
 
+# Finish any interrupted dpkg/apt run first (e.g. a dropped SSH session), or apt refuses to install.
+sudo dpkg --configure -a
+sudo apt-get install -f -y
+
 sudo apt-get update
 sudo apt-get install -y \
   python3-pil \
