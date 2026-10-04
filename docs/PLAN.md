@@ -46,8 +46,8 @@ it can plan against.
 
 ### Phase 1 — Motion (✅ basic gait done: `scripts/slither.py`)
 Next steps, to make it usable by SLAM and the NN:
-- [ ] Raise the Dynamixel baud rate (57600 → 1 Mbps or more), so the loop can read and write all 6 joints at 50 Hz or faster.
-- [ ] Add **GroupSyncRead** of present position (and current), so the real joint angles are known.
+- [x] Raise the Dynamixel baud rate (57600 → 1 Mbps or more), so the loop can read and write all 6 joints at 50 Hz or faster.
+- [x] Add **GroupSyncRead** of present position (and current), so the real joint angles are known.
 - [ ] Add **steering**: a joint-angle offset (bias) gives turning. Expose gait parameters as commands:
       `amplitude`, `frequency`, `wavelength`, `turn_bias`, `direction`.
 - [ ] Wrap it in a ROS 2 node `snake_driver`:

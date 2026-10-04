@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Read-only health check of the Dynamixel bus. It only pings and reads registers, so it never moves a motor.
 
-Usage: python3 scripts/dxl_status.py [--port /dev/dynamixel] [--baud 57600] [--scan-bauds]
+Usage: python3 scripts/dxl_status.py [--port /dev/dynamixel] [--baud 1000000] [--scan-bauds]
 """
 import argparse
 
@@ -25,7 +25,7 @@ REGS = {
 }
 OP_MODES = {0: 'current', 1: 'velocity', 3: 'position', 4: 'ext-position', 5: 'current-pos', 16: 'pwm'}
 HW_ERRORS = {0: 'input-voltage', 2: 'overheat', 3: 'encoder', 4: 'shock', 5: 'overload'}
-BAUDS = [57600, 1000000, 115200, 2000000, 3000000, 4000000, 9600]
+BAUDS = [1000000, 57600, 115200, 2000000, 3000000, 4000000, 9600]
 
 
 def read(ph, port, dxl_id, name):
@@ -48,7 +48,7 @@ def scan(port, ph, baud):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--port', default='/dev/dynamixel')
-    ap.add_argument('--baud', type=int, default=57600)
+    ap.add_argument('--baud', type=int, default=1000000)
     ap.add_argument('--scan-bauds', action='store_true', help='also try other baud rates if none answer')
     a = ap.parse_args()
 

@@ -21,4 +21,5 @@ sudo apt-get install -y \
   ros-jazzy-slam-toolbox \
   ros-jazzy-robot-localization \
   ros-jazzy-cartographer-ros \
-  ros-jazzy-rosbag2-storage-mcap
+  ros-jazzy-rosbag2-storage-mcap \
+  ros-jazzy-dynamixel-sdk

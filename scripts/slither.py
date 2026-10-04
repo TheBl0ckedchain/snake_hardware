@@ -12,7 +12,7 @@ Wiring / setup assumptions:
     - Motor IDs are 1..6 (change MOTOR_IDS below if different).
     - Each motor is in Position Control Mode (operating mode 3), which is
       the XM430 default.
-    - Baudrate is the XM430 default of 57600 (change if you've reconfigured it).
+    - Baudrate 1 Mbps, set once by scripts/dxl_configure.py.
 
 Tune AMPLITUDE_DEG, WAVELENGTH, PERIOD_S, and DIRECTION to change the gait.
 """
@@ -34,8 +34,8 @@ from dynamixel_sdk import (
 # Configuration
 # ----------------------------------------------------------------------
 
-DEVICENAME = "/dev/ttyUSB0"      # change to "COM3" etc. on Windows
-BAUDRATE = 57600
+DEVICENAME = "/dev/dynamixel"   # udev name (see udev/); "COM3" etc. on Windows
+BAUDRATE = 1000000                # set by scripts/dxl_configure.py (factory default 57600)
 PROTOCOL_VERSION = 2.0
 
 MOTOR_IDS = [1, 2, 3, 4, 5, 6]   # order = head to tail along the body
