@@ -17,8 +17,8 @@ ydlidar_ros2_driver_node:
     auto_reconnect: true
     isSingleChannel: false
     support_motor_dtr: false
-    angle_max: 180.0
-    angle_min: -180.0
+    angle_max: 140.0         # rear ~80 deg is blocked by the mounting joint (self-hits at 0.13-0.16 m)
+    angle_min: -140.0
     range_max: 12.0          # G2 spec max
     range_min: 0.12          # G2 spec min
     frequency: 10.0
