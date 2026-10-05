@@ -1,0 +1,26 @@
+controller_manager:
+  ros__parameters:
+    update_rate: 100  # Hz
+
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
+    # Stream raw joint angles, e.g. a serpenoid gait node publishing at 50-100 Hz:
+    #   ros2 topic pub /snake_position_controller/commands std_msgs/msg/Float64MultiArray "{data: [0,0,0,0,0,0]}"
+    snake_position_controller:
+      type: position_controllers/JointGroupPositionController
+
+    # Alternative: timed trajectories (MoveIt, scripted poses). Only one of the two can be active.
+    snake_trajectory_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+
+snake_position_controller:
+  ros__parameters:
+    joints: [joint1, joint2, joint3, joint4, joint5, joint6]
+
+snake_trajectory_controller:
+  ros__parameters:
+    joints: [joint1, joint2, joint3, joint4, joint5, joint6]
+    command_interfaces: [position]
+    state_interfaces: [position, velocity]
+    allow_partial_joints_goal: true

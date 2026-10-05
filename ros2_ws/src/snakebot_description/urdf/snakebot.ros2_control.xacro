@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!--
+    hw = mock : mock_components/GenericSystem (no hardware, commands are echoed back)
+    hw = gz   : gz_ros2_control (Gazebo Harmonic / ROS 2 Jazzy)
+    hw = real : dynamixel_hardware (github.com/dynamixel-community/dynamixel_hardware, jazzy branch)
+    Servo IDs must be 1..6 from head to tail (joint1 = servo in the head).
+  -->
+
+  <xacro:macro name="snake_joint" params="n hw">
+    <joint name="joint${n}">
+      <param name="id">${n}</param>
+      <command_interface name="position">
+        <param name="min">${-joint_limit}</param>
+        <param name="max">${joint_limit}</param>
+      </command_interface>
+      <state_interface name="position">
+        <param name="initial_value">0.0</param>
+      </state_interface>
+      <state_interface name="velocity"/>
+      <xacro:unless value="${hw == 'mock'}">
+        <state_interface name="effort"/>
+      </xacro:unless>
+    </joint>
+  </xacro:macro>
+
+  <xacro:macro name="snakebot_ros2_control" params="hw usb_port baud_rate">
+    <ros2_control name="snakebot_system" type="system">
+      <hardware>
+        <xacro:if value="${hw == 'mock'}">
+          <plugin>mock_components/GenericSystem</plugin>
+        </xacro:if>
+        <xacro:if value="${hw == 'gz'}">
+          <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+        </xacro:if>
+        <xacro:if value="${hw == 'real'}">
+          <plugin>dynamixel_hardware/DynamixelHardware</plugin>
+          <param name="usb_port">${usb_port}</param>
+          <param name="baud_rate">${baud_rate}</param>
+          <param name="use_dummy">false</param>
+        </xacro:if>
+      </hardware>
+      <xacro:snake_joint n="1" hw="${hw}"/>
+      <xacro:snake_joint n="2" hw="${hw}"/>
+      <xacro:snake_joint n="3" hw="${hw}"/>
+      <xacro:snake_joint n="4" hw="${hw}"/>
+      <xacro:snake_joint n="5" hw="${hw}"/>
+      <xacro:snake_joint n="6" hw="${hw}"/>
+    </ros2_control>
+  </xacro:macro>
+
+</robot>

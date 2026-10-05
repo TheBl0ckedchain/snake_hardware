@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- Gazebo Harmonic (gz sim) extras: friction, lidar sensor, ros2_control plugin -->
+
+  <!--
+    Passive bearing wheels are emulated with anisotropic friction on each link:
+    low friction along the body (fdir1 = link x), high friction sideways.
+    This is what lets lateral undulation turn into forward motion.
+  -->
+  <xacro:macro name="snake_contact" params="link">
+    <gazebo reference="${link}">
+      <mu1>${mu_along}</mu1>
+      <mu2>${mu_across}</mu2>
+      <fdir1>1 0 0</fdir1>
+      <kp>1e5</kp>
+      <kd>10</kd>
+      <minDepth>0.0005</minDepth>
+      <self_collide>false</self_collide>
+    </gazebo>
+  </xacro:macro>
+
+  <xacro:macro name="snakebot_gazebo">
+    <xacro:snake_contact link="base_link"/>
+    <xacro:snake_contact link="seg1"/>
+    <xacro:snake_contact link="seg2"/>
+    <xacro:snake_contact link="seg3"/>
+    <xacro:snake_contact link="seg4"/>
+    <xacro:snake_contact link="seg5"/>
+    <xacro:snake_contact link="tail"/>
+
+    <!-- YDLIDAR G2: 5 kHz sampling, 7 Hz default scan rate (~714 pts/rev), 0.12-16 m -->
+    <gazebo reference="laser">
+      <sensor name="ydlidar_g2" type="gpu_lidar">
+        <gz_frame_id>laser</gz_frame_id>
+        <topic>scan</topic>
+        <always_on>true</always_on>
+        <update_rate>7</update_rate>
+        <visualize>true</visualize>
+        <lidar>
+          <scan>
+            <horizontal>
+              <samples>714</samples>
+              <resolution>1</resolution>
+              <min_angle>${-pi}</min_angle>
+              <max_angle>${pi}</max_angle>
+            </horizontal>
+          </scan>
+          <range>
+            <min>0.12</min>
+            <max>16.0</max>
+            <resolution>0.01</resolution>
+          </range>
+          <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.01</stddev>
+          </noise>
+        </lidar>
+      </sensor>
+    </gazebo>
+
+    <gazebo>
+      <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+        <parameters>$(find snakebot_description)/config/controllers.yaml</parameters>
+      </plugin>
+    </gazebo>
+  </xacro:macro>
+
+</robot>

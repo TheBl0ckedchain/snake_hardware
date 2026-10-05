@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<!--
+  snakebot: 6 x Dynamixel XM430-W350 snake, Raspberry Pi 5 + YDLIDAR G2 on the head.
+  Frames follow REP-103: base_link x = forward (toward the head), y = left, z = up.
+  Joint zero = the straight pose from the Fusion model. Joint axes are +z (yaw joints).
+
+  Args:
+    hw        mock | gz | real   which ros2_control hardware to use (default: mock)
+    usb_port  serial port of the U2D2 / Dynamixel adapter (real only)
+    baud_rate Dynamixel bus baud rate (real only, XM430 factory default 57600)
+-->
+<robot name="snakebot" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:arg name="hw" default="mock"/>
+  <xacro:arg name="usb_port" default="/dev/ttyUSB0"/>
+  <xacro:arg name="baud_rate" default="57600"/>
+
+  <!-- ===== Masses (weighed, kg) ===== -->
+  <xacro:property name="m_base_link" value="0.110"/>  <!-- head bracket + servo 1 -->
+  <xacro:property name="m_seg1" value="0.090"/>
+  <xacro:property name="m_seg2" value="0.090"/>
+  <xacro:property name="m_seg3" value="0.090"/>
+  <xacro:property name="m_seg4" value="0.090"/>
+  <xacro:property name="m_seg5" value="0.090"/>
+  <xacro:property name="m_tail" value="0.070"/>
+  <xacro:property name="m_pi5" value="0.046"/>        <!-- Raspberry Pi 5 bare board -->
+  <xacro:property name="m_lidar" value="0.185"/>      <!-- YDLIDAR G2 datasheet -->
+
+  <!-- ===== Joints (XM430-W350 @ 12 V: 4.1 N·m stall, 46 rpm no-load) ===== -->
+  <xacro:property name="joint_limit" value="${pi/2}"/>   <!-- TODO: set to where the brackets actually collide -->
+  <xacro:property name="joint_effort" value="4.1"/>
+  <xacro:property name="joint_velocity" value="4.8"/>     <!-- rad/s -->
+  <xacro:property name="joint_damping" value="0.05"/>
+  <xacro:property name="joint_friction" value="0.01"/>
+
+  <!-- ===== Lidar geometry ===== -->
+  <xacro:property name="lidar_body_r" value="0.036"/>       <!-- visual/inertia approximation -->
+  <xacro:property name="lidar_body_h" value="0.040"/>
+  <xacro:property name="lidar_scan_height" value="0.030"/>  <!-- TODO: measure mount plate -> scan window centre -->
+  <xacro:property name="lidar_yaw" value="0.0"/>            <!-- G2 zero = cable outlet direction; 0 if it faces forward -->
+
+  <!-- ===== Ground contact (passive bearing wheels emulated with anisotropic friction) ===== -->
+  <xacro:property name="mu_along" value="0.1"/>    <!-- rolling direction, along the body -->
+  <xacro:property name="mu_across" value="1.0"/>   <!-- sideways, wheels resist slipping -->
+
+  <xacro:property name="color_head" value="dark_grey"/>
+  <xacro:property name="color_body" value="light_grey"/>
+
+  <xacro:include filename="$(find snakebot_description)/urdf/materials.xacro"/>
+  <xacro:include filename="$(find snakebot_description)/urdf/snakebot_core.xacro"/>
+  <xacro:include filename="$(find snakebot_description)/urdf/snakebot.ros2_control.xacro"/>
+  <xacro:include filename="$(find snakebot_description)/urdf/snakebot.gazebo.xacro"/>
+
+  <xacro:snakebot_ros2_control hw="$(arg hw)" usb_port="$(arg usb_port)" baud_rate="$(arg baud_rate)"/>
+
+  <xacro:if value="${'$(arg hw)' == 'gz'}">
+    <xacro:snakebot_gazebo/>
+  </xacro:if>
+
+</robot>
