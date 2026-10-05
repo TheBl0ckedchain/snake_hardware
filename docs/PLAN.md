@@ -57,7 +57,7 @@ Next steps, to make it usable by SLAM and the NN:
 - [x] URDF for the snake (`snakebot_description`, from CAD) plus `robot_state_publisher` → live TF of every segment.
 - [x] Joint zero offsets (all within ~1°) and collision angles measured (`scripts/joint_calibration.yaml`); limit set to ±60°.
 - [ ] Measure the lidar scan height (placeholder 30 mm).
-- [ ] Confirm each joint's positive direction matches the URDF (+z = counter-clockwise from above).
+- [x] Joint 1 direction matches the URDF (+z), checked with the lidar (`scripts/joint_direction_lidar.py`, +9.9° joint → +6.75° scene shift). Joints 2-6 are the same part, mounted the same way.
 
 **Done when:** a teleop/keyboard node can drive the snake forward and back and turn left and right, and rviz shows the body moving live.
 
