@@ -8,7 +8,7 @@ Parameters (all can be changed live with `ros2 param set /serpenoid <name> <valu
   frequency     Hz, phi' = 2*pi*f   (default 0.5)
   phase_offset  beta, rad per joint (default -pi/3: the wave travels head -> tail, i.e. forward)
   turn_bias     gamma, rad          (default 0; the sign follows the joint direction)
-  joint_limit   rad, every command is clamped to +/- this (default 1.2)
+  joint_limit   rad, every command is clamped to +/- this (default 1.0; dxl_node clamps at 60 deg too)
   ramp_s        seconds to fade A and gamma in at start, on changes, and out on Ctrl-C (default 3)
   rate_hz       publish rate (default 50)
 
@@ -31,7 +31,7 @@ class Serpenoid(Node):
     def __init__(self):
         super().__init__('serpenoid')
         for name, default in (('amplitude', 0.3), ('frequency', 0.5), ('phase_offset', -math.pi / 3),
-                              ('turn_bias', 0.0), ('joint_limit', 1.2), ('ramp_s', 3.0), ('rate_hz', 50.0)):
+                              ('turn_bias', 0.0), ('joint_limit', 1.0), ('ramp_s', 3.0), ('rate_hz', 50.0)):
             self.declare_parameter(name, default)
         self.pub = self.create_publisher(Float64MultiArray, '/snake_position_controller/commands', 10)
         self.dt = 1.0 / self.p('rate_hz')

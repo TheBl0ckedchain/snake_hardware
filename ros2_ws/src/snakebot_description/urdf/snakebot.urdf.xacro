@@ -27,7 +27,7 @@
   <xacro:property name="m_lidar" value="0.185"/>      <!-- YDLIDAR G2 datasheet -->
 
   <!-- ===== Joints (XM430-W350 @ 12 V: 4.1 N·m stall, 46 rpm no-load) ===== -->
-  <xacro:property name="joint_limit" value="${pi/2}"/>   <!-- TODO: set to where the brackets actually collide -->
+  <xacro:property name="joint_limit" value="${radians(60)}"/>  <!-- stops measured 2026-10-05: joint1 -70/+95 deg, joints 2-6 ~+/-100 deg; 10 deg margin on the tightest -->
   <xacro:property name="joint_effort" value="4.1"/>
   <xacro:property name="joint_velocity" value="4.8"/>     <!-- rad/s -->
   <xacro:property name="joint_damping" value="0.05"/>
