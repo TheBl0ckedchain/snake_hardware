@@ -68,8 +68,11 @@ class DxlNode(Node):
         self.current_limit = p('current_limit_a', 1.5).value
         self.current_time = p('current_limit_time_s', 1.0).value
         self.temp_limit = p('temp_limit_c', 70).value
-        if len(self.names) != len(self.ids):
-            raise ValueError('joint_names and ids differ in length')
+        offsets = list(p('zero_offset_deg', [0.0] * len(self.ids)).value)
+        if len(self.names) != len(self.ids) or len(offsets) != len(self.ids):
+            raise ValueError('joint_names, zero_offset_deg and ids must have the same length')
+        # Raw position (ticks) of each joint's straight pose; 2048 unless a horn sits off its spline zero.
+        self.center = [CENTER + round(math.radians(o) / RAD_PER_TICK) for o in offsets]
 
         self.port, self.ph = PortHandler(port), PacketHandler(2.0)
         if not self.port.openPort() or not self.port.setBaudRate(baud):
@@ -134,15 +137,15 @@ class DxlNode(Node):
             if positions is None:
                 raise IOError('cannot read joint positions')
             lim = round(self.limit_rad / RAD_PER_TICK)
-            for i, pos in zip(self.ids, positions[0]):
-                if abs(pos - CENTER) > lim:
-                    raise ValueError(f'id {i} is at {math.degrees((pos - CENTER) * RAD_PER_TICK):.0f} deg, '
+            for i, pos, c in zip(self.ids, positions[0], self.center):
+                if abs(pos - c) > lim:
+                    raise ValueError(f'id {i} is at {math.degrees((pos - c) * RAD_PER_TICK):.0f} deg, '
                                      f'outside the +/-{math.degrees(self.limit_rad):.0f} deg limit')
-            for i, pos in zip(self.ids, positions[0]):
+            for i, pos, c in zip(self.ids, positions[0], self.center):
                 self.write(1, i, ADDR_TORQUE, 0)               # EEPROM below needs torque off
                 self.write(2, i, ADDR_PWM_LIMIT, self.pwm_limit)
-                self.write(4, i, ADDR_MAX_POS, CENTER + lim)
-                self.write(4, i, ADDR_MIN_POS, CENTER - lim)
+                self.write(4, i, ADDR_MAX_POS, min(4095, c + lim))
+                self.write(4, i, ADDR_MIN_POS, max(0, c - lim))
                 self.write(4, i, ADDR_PROFILE_ACCEL, self.profile_accel)
                 self.write(4, i, ADDR_PROFILE_VEL, self.profile_vel)
                 self.write(4, i, ADDR_GOAL_POS, pos)           # hold where it is: no jump on enable
@@ -182,8 +185,8 @@ class DxlNode(Node):
     def set_goal(self, q):
         if any(not math.isfinite(x) for x in q):
             return
-        self.pending_goal = [CENTER + round(max(-self.limit_rad, min(self.limit_rad, x)) / RAD_PER_TICK)
-                             for x in q]
+        self.pending_goal = [c + round(max(-self.limit_rad, min(self.limit_rad, x)) / RAD_PER_TICK)
+                             for c, x in zip(self.center, q)]
 
     # ---------------------------------------------------------------- main loop
     def read_state(self):
@@ -214,7 +217,7 @@ class DxlNode(Node):
         js = JointState()
         js.header.stamp = now
         js.name = self.names
-        js.position = [(p - CENTER) * RAD_PER_TICK for p in pos]
+        js.position = [(p - c) * RAD_PER_TICK for p, c in zip(pos, self.center)]
         js.velocity = [v * RAD_S_PER_UNIT for v in vel]
         js.effort = [c * AMP_PER_UNIT for c in cur]
         self.js_pub.publish(js)
