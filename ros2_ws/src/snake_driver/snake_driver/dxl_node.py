@@ -133,7 +133,7 @@ class DxlNode(Node):
                 self.set_torque_all(False)
                 resp.success, resp.message = True, 'torque off'
                 return resp
-            positions = self.read_state()
+            positions = self.read_state()   # OSError from here is caught below
             if positions is None:
                 raise IOError('cannot read joint positions')
             lim = round(self.limit_rad / RAD_PER_TICK)
@@ -153,6 +153,7 @@ class DxlNode(Node):
             self.over_current_since.clear()
             resp.success, resp.message = True, 'torque on, holding present position'
         except (IOError, ValueError) as e:
+            self.reset_port()
             self.set_torque_all(False, check=False)
             resp.success, resp.message = False, str(e)
         self.get_logger().info(f'enable({req.data}): {resp.message}')
@@ -202,13 +203,33 @@ class DxlNode(Node):
         return pos, vel, cur
 
     def loop(self):
+        try:
+            self.cycle()
+        except OSError as e:  # serial errors (unplugged adapter, another process on the port): never crash
+            self.get_logger().error(f'bus error: {e}', throttle_duration_sec=2.0)
+            self.reset_port()
+            self.fail_read()
+
+    def reset_port(self):
+        # The SDK marks the port busy for the duration of a transfer; an exception mid-transfer leaves it
+        # stuck busy and every later call fails with COMM_PORT_BUSY. Clear it and drop any partial input.
+        self.port.is_using = False
+        try:
+            self.port.clearPort()
+        except OSError:
+            pass
+
+    def fail_read(self):
+        self.read_failures += 1
+        if self.read_failures == 10:
+            self.get_logger().error('lost contact with the servos (10 failed reads)')
+            if self.enabled:
+                self.trip('communication lost')
+
+    def cycle(self):
         state = self.read_state()
         if state is None:
-            self.read_failures += 1
-            if self.read_failures == 10:
-                self.get_logger().error('lost contact with the servos (10 failed reads)')
-                if self.enabled:
-                    self.trip('communication lost')
+            self.fail_read()
             return
         self.read_failures = 0
         pos, vel, cur = state

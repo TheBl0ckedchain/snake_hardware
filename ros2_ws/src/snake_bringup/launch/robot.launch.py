@@ -6,7 +6,7 @@ Torque stays off until:  ros2 service call /dxl_node/enable std_srvs/srv/SetBool
 Emergency torque off:    python3 ~/snake_hardware/scripts/torque_off.py
 """
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
+from launch.actions import DeclareLaunchArgument, GroupAction, IncludeLaunchDescription
 from launch.conditions import IfCondition
 from launch.substitutions import Command, LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
@@ -26,10 +26,11 @@ def generate_launch_description():
              parameters=[{'robot_description': robot_description}]),
         IncludeLaunchDescription(PathJoinSubstitution([bringup, 'launch', 'servos.launch.py'])),
         # The URDF already places base_link -> lidar -> laser, so no static TF from the lidar launch.
-        IncludeLaunchDescription(
+        # Scoped: an include's launch_arguments otherwise leak into this file (foxglove:=false would stick).
+        GroupAction([IncludeLaunchDescription(
             PathJoinSubstitution([bringup, 'launch', 'lidar.launch.py']),
-            launch_arguments={'static_tf': 'false', 'foxglove': 'false'}.items(),
-            condition=IfCondition(LaunchConfiguration('lidar'))),
+            launch_arguments={'static_tf': 'false', 'foxglove': 'false'}.items())],
+            scoped=True, condition=IfCondition(LaunchConfiguration('lidar'))),
         # Headless Pi: view everything from the laptop in Foxglove at ws://<pi-ip>:8765.
         Node(package='foxglove_bridge', executable='foxglove_bridge', name='foxglove_bridge',
              parameters=[{'port': 8765}], condition=IfCondition(LaunchConfiguration('foxglove'))),

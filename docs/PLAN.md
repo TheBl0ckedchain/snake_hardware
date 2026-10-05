@@ -73,6 +73,7 @@ Next steps, to make it usable by SLAM and the NN:
 **Done when:** a stable, correctly oriented `/scan` shows in rviz while the snake slithers, with no body self-hits.
 
 ### Phase 3 — Localisation & SLAM
+- [x] slam_toolbox running live (`ros2 launch snake_bringup slam.launch.py`), scan-matching only: odom -> base_link is a static identity until the virtual-chassis odometry exists. Verified on the first slither bag (head moved ~4-5 cm, matches ICP 5.6 cm and CoM 5.7 cm).
 Step by step, testing against recorded bags first:
 1. [ ] **Virtual-chassis frame** (`base_link`): computed from the joint angles (centroid and principal axis of the body). It removes the gait oscillation, so SLAM sees smooth motion.
 2. [ ] **Lidar odometry**: `rf2o_laser_odometry` → `odom → base_link`.
