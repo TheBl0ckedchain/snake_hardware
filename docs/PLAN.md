@@ -1,5 +1,24 @@
 # Snake Robot — Hardware & Perception Plan
 
+## Where we left off (2026-10-05)
+
+Working: lidar (`/scan`, rear ±40° cropped), servo driver `dxl_node` (1 Mbps, 100 Hz `/joint_states`,
+safety trips, torque off by default), URDF from CAD with calibrated zeros and ±60° limits, serpenoid
+gait, slam_toolbox (scan-matching only), Foxglove on :8765.
+Last runs (bags in `~/bags`): A=0.2 rad, 0.5 Hz → 5.7 cm; **A=0.4 rad, 0.5 Hz → 19 cm in ~13 s**,
+peak 0.12 A, 37 °C, slight drift to the right (about −10°).
+
+Next session, in order:
+1. Turning test: A=0.4 with `turn_bias` ±0.15 rad (`scripts/slither_run.sh 0.4 0.5 10 0.15`).
+2. Keyboard teleop node → closes Phase 1.
+3. Phase 3: virtual-chassis odometry from joint angles (+ IMU) to replace the identity odom->base_link.
+   SLAM lost track once when the lidar restarted mid-run; restart SLAM after any lidar restart until then.
+Open items: lidar scan height (URDF placeholder 30 mm); `install_system_deps.sh` (ros2_control, for mock mode).
+
+Start-up: `ros2 launch snake_bringup robot.launch.py` (+ `slam.launch.py`), then
+`ros2 service call /dxl_node/enable std_srvs/srv/SetBool "{data: true}"`. E-stop: `python3 scripts/torque_off.py`.
+Don't run `scripts/dxl_status.py` while `dxl_node` is running (they share the serial port).
+
 ## Scope
 
 A planar (2D) snake robot that must travel point-to-point through an obstacle-filled maze.
