@@ -31,7 +31,7 @@ colcon build --symlink-install --packages-select snakebot_description && source 
 |---|---|
 | Model + joint sliders | `ros2 launch snakebot_description display.launch.py` |
 | Controllers, no hardware | `ros2 launch snakebot_description bringup.launch.py rviz:=true` |
-| Real servos | `ros2 launch snakebot_description bringup.launch.py hw:=real usb_port:=/dev/ttyUSB0` |
+| Real servos | `ros2 launch snake_bringup robot.launch.py` (uses `snake_driver/dxl_node`, see below) |
 | Gazebo Harmonic | `ros2 launch snakebot_description gazebo.launch.py rviz:=true` |
 
 To command joint angles (in radians), publish to the position controller:
@@ -42,8 +42,10 @@ ros2 topic pub /snake_position_controller/commands std_msgs/msg/Float64MultiArra
 
 ## Real hardware
 
-- Uses `dynamixel_hardware`, built from source on the `jazzy` branch of github.com/dynamixel-community/dynamixel_hardware.
-- Set the servo IDs to 1–6 from head to tail, all at the same baud rate. Dynamixel Wizard can do this.
+- The real robot is driven by `snake_driver/dxl_node`, not ros2_control: it has over-current/temperature trips
+  and starts with torque off. It listens on the same `/snake_position_controller/commands` topic, so gait and
+  NN nodes work unchanged. The `hw:=real` block here (dynamixel_hardware plugin) is unused and not installed.
+- Servo IDs are 1–6 from head to tail at 1 Mbps (`scripts/dxl_configure.py`).
 
 ## Values to check
 

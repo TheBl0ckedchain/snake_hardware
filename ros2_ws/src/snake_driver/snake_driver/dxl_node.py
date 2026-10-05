@@ -7,8 +7,11 @@ effort = motor current A).
 Topics and services:
   pub  /joint_states        sensor_msgs/JointState
   pub  /diagnostics         diagnostic_msgs/DiagnosticArray (1 Hz: voltage, temperature, errors)
-  sub  /snake/joint_cmd     sensor_msgs/JointState, target positions in rad, by name (or in joint order
-                            when names are empty). Ignored while torque is off. Clamped to the joint limits.
+  sub  /snake_position_controller/commands  std_msgs/Float64MultiArray, 6 target positions in rad,
+                            joint1 -> joint6. Same interface as the ros2_control JointGroupPositionController in
+                            snakebot_description, so a gait or NN node runs unchanged on mock, Gazebo or this driver.
+  sub  /snake/joint_cmd     sensor_msgs/JointState, target positions by name (or in joint order if names are empty).
+  Commands are ignored while torque is off and clamped to the joint limits.
   srv  ~/enable             std_srvs/SetBool. true: apply the safety limits, set each goal to its present
                             position (so nothing jumps), then torque on. false: torque off.
 
@@ -24,6 +27,7 @@ from diagnostic_msgs.msg import DiagnosticArray, DiagnosticStatus, KeyValue
 from dynamixel_sdk import COMM_SUCCESS, GroupSyncRead, GroupSyncWrite, PacketHandler, PortHandler
 from rclpy.node import Node
 from sensor_msgs.msg import JointState
+from std_msgs.msg import Float64MultiArray
 from std_srvs.srv import SetBool
 
 # XM430-W350 control table (protocol 2.0)
@@ -53,7 +57,7 @@ class DxlNode(Node):
         super().__init__('dxl_node')
         p = self.declare_parameter
         self.ids = list(p('ids', [1, 2, 3, 4, 5, 6]).value)
-        self.names = list(p('joint_names', [f'joint_{i}' for i in self.ids]).value)
+        self.names = list(p('joint_names', [f'joint{i}' for i in self.ids]).value)
         port = p('port', '/dev/dynamixel').value
         baud = p('baudrate', 1000000).value
         rate = p('rate_hz', 100.0).value
@@ -90,6 +94,7 @@ class DxlNode(Node):
         self.js_pub = self.create_publisher(JointState, '/joint_states', 10)
         self.diag_pub = self.create_publisher(DiagnosticArray, '/diagnostics', 10)
         self.create_subscription(JointState, '/snake/joint_cmd', self.on_cmd, 10)
+        self.create_subscription(Float64MultiArray, '/snake_position_controller/commands', self.on_array_cmd, 10)
         self.create_service(SetBool, '~/enable', self.on_enable)
         # One timer does all bus I/O; the single-threaded executor serialises it with the callbacks.
         self.create_timer(1.0 / rate, self.loop)
@@ -164,6 +169,17 @@ class DxlNode(Node):
         else:
             self.get_logger().warn('joint_cmd needs one position per joint; ignored', throttle_duration_sec=2.0)
             return
+        self.set_goal(q)
+
+    def on_array_cmd(self, msg):
+        if not self.enabled:
+            return
+        if len(msg.data) != len(self.ids):
+            self.get_logger().warn(f'commands need {len(self.ids)} values; ignored', throttle_duration_sec=2.0)
+            return
+        self.set_goal(list(msg.data))
+
+    def set_goal(self, q):
         if any(not math.isfinite(x) for x in q):
             return
         self.pending_goal = [CENTER + round(max(-self.limit_rad, min(self.limit_rad, x)) / RAD_PER_TICK)

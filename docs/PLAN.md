@@ -48,13 +48,15 @@ it can plan against.
 Next steps, to make it usable by SLAM and the NN:
 - [x] Raise the Dynamixel baud rate (57600 → 1 Mbps or more), so the loop can read and write all 6 joints at 50 Hz or faster.
 - [x] Add **GroupSyncRead** of present position (and current), so the real joint angles are known.
-- [ ] Add **steering**: a joint-angle offset (bias) gives turning. Expose gait parameters as commands:
-      `amplitude`, `frequency`, `wavelength`, `turn_bias`, `direction`.
-- [ ] Wrap it in a ROS 2 node `snake_driver`:
-      - subscribes to `/snake/gait_cmd` (gait parameters) **and/or** `/snake/joint_cmd` (direct joint targets for the NN)
+- [x] Add **steering**: a joint-angle offset (bias) gives turning. Gait parameters `amplitude`, `frequency`,
+      `phase_offset` (wavelength and direction), `turn_bias` are live ROS parameters of `snakebot_gait/serpenoid`.
+- [x] Wrap it in a ROS 2 node `snake_driver` (`dxl_node`):
+      - subscribes to `/snake_position_controller/commands` (and `/snake/joint_cmd`) for direct joint targets
       - publishes `/joint_states`
       - safety: watchdog stop on command timeout, torque off on exit, joint limits, monitoring of temperature and current.
-- [ ] URDF for the snake (segment lengths, the lidar mount) plus `robot_state_publisher` → live TF of every segment.
+- [x] URDF for the snake (`snakebot_description`, from CAD) plus `robot_state_publisher` → live TF of every segment.
+- [ ] Measure the real joint collision angle (placeholder ±90°) and the lidar scan height (placeholder 30 mm).
+- [ ] Confirm each joint's positive direction matches the URDF (+z = counter-clockwise from above).
 
 **Done when:** a teleop/keyboard node can drive the snake forward and back and turn left and right, and rviz shows the body moving live.
 

@@ -1,5 +1,5 @@
-"""Start the YDLidar G2 driver. The laser frame is attached to the body by the URDF later;
-until then a static base_link -> laser transform is published so tools have a fixed frame."""
+"""Start the YDLidar G2 driver. With static_tf:=true (default, for standalone use) it publishes an
+identity base_link -> laser transform; robot.launch.py turns that off because the URDF places the laser."""
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
 from launch.conditions import IfCondition

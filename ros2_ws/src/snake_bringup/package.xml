@@ -11,5 +11,8 @@
   <exec_depend>launch_ros</exec_depend>
   <exec_depend>foxglove_bridge</exec_depend>
   <exec_depend>snake_driver</exec_depend>
+  <exec_depend>snakebot_description</exec_depend>
+  <exec_depend>robot_state_publisher</exec_depend>
+  <exec_depend>xacro</exec_depend>
   <export><build_type>ament_cmake</build_type></export>
 </package>
