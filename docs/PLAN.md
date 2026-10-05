@@ -59,6 +59,8 @@ Next steps, to make it usable by SLAM and the NN:
 - [ ] Measure the lidar scan height (placeholder 30 mm).
 - [x] Joint 1 direction matches the URDF (+z), checked with the lidar (`scripts/joint_direction_lidar.py`, +9.9° joint → +6.75° scene shift). Joints 2-6 are the same part, mounted the same way.
 
+- [x] First slither under the driver (2026-10-05): A=0.2 rad, 0.5 Hz → 5.5 cm forward in ~10 s, peak 0.14 A, ≤37 °C (`scripts/slither_run.sh`, bag in ~/bags).
+
 **Done when:** a teleop/keyboard node can drive the snake forward and back and turn left and right, and rviz shows the body moving live.
 
 ### Phase 2 — Lidar
