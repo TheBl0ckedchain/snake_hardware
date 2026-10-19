@@ -6,7 +6,7 @@
 set -um   # -m: each background job gets its own process group (pgid = $!), so stop_group reaches its children
 A=${1:-0.2}; F=${2:-0.5}; STEADY=${3:-10}; BIAS=${4:-0}
 HERE="$(cd "$(dirname "$0")/.." && pwd)"
-source "$HERE/ros2_ws/install/setup.bash"
+set +u; source "$HERE/ros2_ws/install/setup.bash"; set -u   # colcon scripts read unset vars
 BAG=~/bags/slither_$(date +%Y%m%d_%H%M%S); mkdir -p ~/bags
 LOG=$(mktemp -d)
 LPID= BPID= GPID=
@@ -14,7 +14,8 @@ LPID= BPID= GPID=
 stop_group() { [ -n "$1" ] && kill -TERM -- "-$1" 2>/dev/null; }
 cleanup() {
   trap - EXIT INT TERM
-  ros2 service call /dxl_node/enable std_srvs/srv/SetBool "{data: false}" >/dev/null 2>&1 \
+  # the service call hangs if dxl_node has died, so it gets 5 s before the direct e-stop
+  timeout 5 ros2 service call /dxl_node/enable std_srvs/srv/SetBool "{data: false}" 2>/dev/null | grep -q "success=True" \
     || python3 "$HERE/scripts/torque_off.py"
   stop_group "$GPID"; stop_group "$BPID"; sleep 2; stop_group "$LPID"; sleep 3
   python3 "$HERE/scripts/dxl_status.py" | tail -n 7
@@ -32,7 +33,11 @@ ros2 service call /dxl_node/enable std_srvs/srv/SetBool "{data: true}" | grep -q
 echo "torque on; slithering A=$A rad f=$F Hz bias=$BIAS rad for 3 s ramp + ${STEADY} s"
 "$HERE/ros2_ws/install/snakebot_gait/lib/snakebot_gait/serpenoid" --ros-args \
   -p amplitude:="$A" -p frequency:="$F" -p turn_bias:="$BIAS" > "$LOG/gait.log" 2>&1 & GPID=$!
-sleep $((3 + STEADY))
+# watch the driver: if it dies (e.g. the U2D2 drops off USB) the servos hold their last goal, so bail out
+for _ in $(seq 1 $((2 * (3 + STEADY)))); do
+  grep -q "dxl_node.*process has died" "$LOG/launch.log" && { echo "!!! dxl_node died; e-stop"; tail -n 3 "$LOG/launch.log"; exit 1; }
+  sleep 0.5
+done
 kill -TERM "$GPID"   # fades to straight over ramp_s, then exits
 for _ in $(seq 1 20); do kill -0 "$GPID" 2>/dev/null || break; sleep 0.5; done
 GPID=

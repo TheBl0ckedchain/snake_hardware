@@ -1,17 +1,26 @@
 # Snake Robot — Hardware & Perception Plan
 
-## Where we left off (2026-10-05)
+## Where we left off (2026-10-19)
 
 Working: lidar (`/scan`, rear ±40° cropped), servo driver `dxl_node` (1 Mbps, 100 Hz `/joint_states`,
 safety trips, torque off by default), URDF from CAD with calibrated zeros and ±60° limits, serpenoid
-gait, slam_toolbox (scan-matching only), Foxglove on :8765.
-Last runs (bags in `~/bags`): A=0.2 rad, 0.5 Hz → 5.7 cm; **A=0.4 rad, 0.5 Hz → 19 cm in ~13 s**,
-peak 0.12 A, 37 °C, slight drift to the right (about −10°).
+gait (now also steerable by `/cmd_vel`), keyboard teleop (`teleop_key`), NEAT policy node (`nn_controller`,
+dry-run tested only), slam_toolbox (scan-matching only), Foxglove on :8765.
+Runs (bags in `~/bags`, measured with `scripts/bag_displacement.py`, ICP between first and last scan):
+A=0.2, 0.5 Hz → 6 cm, −8°; A=0.4, 0.5 Hz → 20 cm, −10° (drifts right);
+**A=0.4, 0.5 Hz, turn_bias +0.15 → 33 cm, +25° (left)**. The −0.15 run aborted (see below).
+
+**Hardware problem: the U2D2 (FTDI, usb 4-1) keeps dropping off USB** — ~15 disconnects on 2026-10-19,
+one 2 s into the −0.15 run (dxl_node died with EIO; servos held pose until torque_off). The lidar's
+CP210x also logs timeouts. Check the U2D2 cable/connector and USB power before more runs.
+`slither_run.sh` now e-stops if dxl_node dies.
 
 Next session, in order:
-1. Turning test: A=0.4 with `turn_bias` ±0.15 rad (`scripts/slither_run.sh 0.4 0.5 10 0.15`).
-2. Keyboard teleop node → closes Phase 1.
-3. Phase 3: virtual-chassis odometry from joint angles (+ IMU) to replace the identity odom->base_link.
+1. Fix the USB dropouts, then repeat the turning test with bias −0.15 (`scripts/slither_run.sh 0.4 0.5 10 -0.15`).
+2. Teleop on the robot: `serpenoid --ros-args -p use_cmd_vel:=true` + `teleop_key` → closes Phase 1.
+3. NN policy on the robot with SLAM (command line in `nn_controller.py`'s docstring). Sim-to-real gaps:
+   the sim snake has passive wheels, body amplitude 1.0 rad, head 0.3, beta −pi/6.
+4. Phase 3: virtual-chassis odometry from joint angles (+ IMU) to replace the identity odom->base_link.
    SLAM lost track once when the lidar restarted mid-run; restart SLAM after any lidar restart until then.
 Open items: lidar scan height (URDF placeholder 30 mm); `install_system_deps.sh` (ros2_control, for mock mode).
 
