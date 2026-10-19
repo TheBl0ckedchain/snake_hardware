@@ -5,3 +5,4 @@ venv/
 *.log
 build/
 .DS_Store
+6_joint_snake/*.mp4

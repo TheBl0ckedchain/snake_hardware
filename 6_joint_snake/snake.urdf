@@ -1,0 +1,478 @@
+<?xml version="1.0" ?>
+<robot name="my_robot">
+
+    <!-- ===================== SEGMENT 0 (head) ===================== -->
+    <link name="servo_link0">
+        <visual>
+            <geometry><box size="0.1 0.1 0.1"/></geometry>
+            <material name="red"><color rgba="1 0 0 1"/></material>
+        </visual>
+        <collision><geometry><box size="0.1 0.1 0.1"/></geometry></collision>
+        <inertial>
+            <mass value="0.3"/>
+            <origin xyz="0 0 0"/>
+            <inertia ixx="0.0005" ixy="0.0" ixz="0.0" iyy="0.0005" iyz="0.0" izz="0.0005"/>
+        </inertial>
+    </link>
+
+    <joint name="servo_wheel_l0" type="continuous">
+        <parent link="servo_link0"/>
+        <child link="wheel_l0"/>
+        <origin xyz="0 0.055 -0.04" rpy="-1.57 0 0"/>
+        <axis xyz="0 0 1"/>
+    </joint>
+    <link name="wheel_l0">
+        <visual>
+            <geometry><cylinder radius="0.03" length="0.01"/></geometry>
+            <material name="blue"><color rgba="0 0 1 1"/></material>
+        </visual>
+        <collision><geometry><cylinder radius="0.03" length="0.01"/></geometry></collision>
+        <inertial>
+            <mass value="0.01"/>
+            <origin xyz="0 0 0"/>
+            <inertia ixx="2.33e-06" ixy="0.0" ixz="0.0" iyy="2.33e-06" iyz="0.0" izz="4.5e-06"/>
+        </inertial>
+    </link>
+
+    <joint name="servo_wheel_r0" type="continuous">
+        <parent link="servo_link0"/>
+        <child link="wheel_r0"/>
+        <origin xyz="0 -0.055 -0.04" rpy="1.57 0 0"/>
+        <axis xyz="0 0 1"/>
+    </joint>
+    <link name="wheel_r0">
+        <visual>
+            <geometry><cylinder radius="0.03" length="0.01"/></geometry>
+            <material name="blue"><color rgba="0 0 1 1"/></material>
+        </visual>
+        <collision><geometry><cylinder radius="0.03" length="0.01"/></geometry></collision>
+        <inertial>
+            <mass value="0.01"/>
+            <origin xyz="0 0 0"/>
+            <inertia ixx="2.33e-06" ixy="0.0" ixz="0.0" iyy="2.33e-06" iyz="0.0" izz="4.5e-06"/>
+        </inertial>
+    </link>
+
+    <!-- Joint 0: S0 → gear0 (revolute) -->
+    <joint name="servo_joint0" type="revolute">
+        <parent link="servo_link0"/>
+        <child link="gear_link0"/>
+        <origin xyz="0.1 0 0"/>
+        <axis xyz="0 0 1"/>
+        <limit lower="-1.57" upper="1.57"/>
+    </joint>
+    <link name="gear_link0">
+        <visual>
+            <geometry><cylinder radius="0.05" length="0.1"/></geometry>
+            <material name="white"><color rgba="1 1 1 1"/></material>
+        </visual>
+        <collision><geometry><cylinder radius="0.05" length="0.1"/></geometry></collision>
+        <inertial>
+            <mass value="0.005"/>
+            <origin xyz="0 0 0"/>
+            <inertia ixx="7.29e-06" ixy="0.0" ixz="0.0" iyy="7.29e-06" iyz="0.0" izz="6.25e-06"/>
+        </inertial>
+    </link>
+
+    <!-- Fixed: gear0 → S1 -->
+    <joint name="gear_joint0" type="fixed">
+        <parent link="gear_link0"/>
+        <child link="servo_link1"/>
+        <origin xyz="0.1 0 0"/>
+    </joint>
+
+    <!-- ===================== SEGMENT 1 ===================== -->
+    <link name="servo_link1">
+        <visual>
+            <geometry><box size="0.1 0.1 0.1"/></geometry>
+            <material name="black"><color rgba="0 0 0 1"/></material>
+        </visual>
+        <collision><geometry><box size="0.1 0.1 0.1"/></geometry></collision>
+        <inertial>
+            <mass value="0.3"/>
+            <origin xyz="0 0 0"/>
+            <inertia ixx="0.0005" ixy="0.0" ixz="0.0" iyy="0.0005" iyz="0.0" izz="0.0005"/>
+        </inertial>
+    </link>
+
+    <joint name="servo_wheel_l1" type="continuous">
+        <parent link="servo_link1"/>
+        <child link="wheel_l1"/>
+        <origin xyz="0 0.055 -0.04" rpy="-1.57 0 0"/>
+        <axis xyz="0 0 1"/>
+    </joint>
+    <link name="wheel_l1">
+        <visual>
+            <geometry><cylinder radius="0.03" length="0.01"/></geometry>
+            <material name="blue"><color rgba="0 0 1 1"/></material>
+        </visual>
+        <collision><geometry><cylinder radius="0.03" length="0.01"/></geometry></collision>
+        <inertial>
+            <mass value="0.01"/>
+            <origin xyz="0 0 0"/>
+            <inertia ixx="2.33e-06" ixy="0.0" ixz="0.0" iyy="2.33e-06" iyz="0.0" izz="4.5e-06"/>
+        </inertial>
+    </link>
+
+    <joint name="servo_wheel_r1" type="continuous">
+        <parent link="servo_link1"/>
+        <child link="wheel_r1"/>
+        <origin xyz="0 -0.055 -0.04" rpy="1.57 0 0"/>
+        <axis xyz="0 0 1"/>
+    </joint>
+    <link name="wheel_r1">
+        <visual>
+            <geometry><cylinder radius="0.03" length="0.01"/></geometry>
+            <material name="blue"><color rgba="0 0 1 1"/></material>
+        </visual>
+        <collision><geometry><cylinder radius="0.03" length="0.01"/></geometry></collision>
+        <inertial>
+            <mass value="0.01"/>
+            <origin xyz="0 0 0"/>
+            <inertia ixx="2.33e-06" ixy="0.0" ixz="0.0" iyy="2.33e-06" iyz="0.0" izz="4.5e-06"/>
+        </inertial>
+    </link>
+
+    <!-- Joint 1: S1 → gear1 (revolute) -->
+    <joint name="servo_joint1" type="revolute">
+        <parent link="servo_link1"/>
+        <child link="gear_link1"/>
+        <origin xyz="0.1 0 0"/>
+        <axis xyz="0 0 1"/>
+        <limit lower="-3.14" upper="3.14"/>
+    </joint>
+    <link name="gear_link1">
+        <visual>
+            <geometry><cylinder radius="0.05" length="0.1"/></geometry>
+            <material name="white"><color rgba="1 1 1 1"/></material>
+        </visual>
+        <collision><geometry><cylinder radius="0.05" length="0.1"/></geometry></collision>
+        <inertial>
+            <mass value="0.005"/>
+            <origin xyz="0 0 0"/>
+            <inertia ixx="7.29e-06" ixy="0.0" ixz="0.0" iyy="7.29e-06" iyz="0.0" izz="6.25e-06"/>
+        </inertial>
+    </link>
+
+    <!-- Fixed: gear1 → S2 -->
+    <joint name="gear_joint1" type="fixed">
+        <parent link="gear_link1"/>
+        <child link="servo_link2"/>
+        <origin xyz="0.1 0 0"/>
+    </joint>
+
+    <!-- ===================== SEGMENT 2 ===================== -->
+    <link name="servo_link2">
+        <visual>
+            <geometry><box size="0.1 0.1 0.1"/></geometry>
+            <material name="black"><color rgba="0 0 0 1"/></material>
+        </visual>
+        <collision><geometry><box size="0.1 0.1 0.1"/></geometry></collision>
+        <inertial>
+            <mass value="0.3"/>
+            <origin xyz="0 0 0"/>
+            <inertia ixx="0.0005" ixy="0.0" ixz="0.0" iyy="0.0005" iyz="0.0" izz="0.0005"/>
+        </inertial>
+    </link>
+
+    <joint name="servo_wheel_l2" type="continuous">
+        <parent link="servo_link2"/>
+        <child link="wheel_l2"/>
+        <origin xyz="0 0.055 -0.04" rpy="-1.57 0 0"/>
+        <axis xyz="0 0 1"/>
+    </joint>
+    <link name="wheel_l2">
+        <visual>
+            <geometry><cylinder radius="0.03" length="0.01"/></geometry>
+            <material name="blue"><color rgba="0 0 1 1"/></material>
+        </visual>
+        <collision><geometry><cylinder radius="0.03" length="0.01"/></geometry></collision>
+        <inertial>
+            <mass value="0.01"/>
+            <origin xyz="0 0 0"/>
+            <inertia ixx="2.33e-06" ixy="0.0" ixz="0.0" iyy="2.33e-06" iyz="0.0" izz="4.5e-06"/>
+        </inertial>
+    </link>
+
+    <joint name="servo_wheel_r2" type="continuous">
+        <parent link="servo_link2"/>
+        <child link="wheel_r2"/>
+        <origin xyz="0 -0.055 -0.04" rpy="1.57 0 0"/>
+        <axis xyz="0 0 1"/>
+    </joint>
+    <link name="wheel_r2">
+        <visual>
+            <geometry><cylinder radius="0.03" length="0.01"/></geometry>
+            <material name="blue"><color rgba="0 0 1 1"/></material>
+        </visual>
+        <collision><geometry><cylinder radius="0.03" length="0.01"/></geometry></collision>
+        <inertial>
+            <mass value="0.01"/>
+            <origin xyz="0 0 0"/>
+            <inertia ixx="2.33e-06" ixy="0.0" ixz="0.0" iyy="2.33e-06" iyz="0.0" izz="4.5e-06"/>
+        </inertial>
+    </link>
+
+    <!-- Joint 2: S2 → gear2 (revolute) -->
+    <joint name="servo_joint2" type="revolute">
+        <parent link="servo_link2"/>
+        <child link="gear_link2"/>
+        <origin xyz="0.1 0 0"/>
+        <axis xyz="0 0 1"/>
+        <limit lower="-3.14" upper="3.14"/>
+    </joint>
+    <link name="gear_link2">
+        <visual>
+            <geometry><cylinder radius="0.05" length="0.1"/></geometry>
+            <material name="white"><color rgba="1 1 1 1"/></material>
+        </visual>
+        <collision><geometry><cylinder radius="0.05" length="0.1"/></geometry></collision>
+        <inertial>
+            <mass value="0.005"/>
+            <origin xyz="0 0 0"/>
+            <inertia ixx="7.29e-06" ixy="0.0" ixz="0.0" iyy="7.29e-06" iyz="0.0" izz="6.25e-06"/>
+        </inertial>
+    </link>
+
+    <!-- Fixed: gear2 → S3 -->
+    <joint name="gear_joint2" type="fixed">
+        <parent link="gear_link2"/>
+        <child link="servo_link3"/>
+        <origin xyz="0.1 0 0"/>
+    </joint>
+
+    <!-- ===================== SEGMENT 3 ===================== -->
+    <link name="servo_link3">
+        <visual>
+            <geometry><box size="0.1 0.1 0.1"/></geometry>
+            <material name="black"><color rgba="0 0 0 1"/></material>
+        </visual>
+        <collision><geometry><box size="0.1 0.1 0.1"/></geometry></collision>
+        <inertial>
+            <mass value="0.3"/>
+            <origin xyz="0 0 0"/>
+            <inertia ixx="0.0005" ixy="0.0" ixz="0.0" iyy="0.0005" iyz="0.0" izz="0.0005"/>
+        </inertial>
+    </link>
+
+    <joint name="servo_wheel_l3" type="continuous">
+        <parent link="servo_link3"/>
+        <child link="wheel_l3"/>
+        <origin xyz="0 0.055 -0.04" rpy="-1.57 0 0"/>
+        <axis xyz="0 0 1"/>
+    </joint>
+    <link name="wheel_l3">
+        <visual>
+            <geometry><cylinder radius="0.03" length="0.01"/></geometry>
+            <material name="blue"><color rgba="0 0 1 1"/></material>
+        </visual>
+        <collision><geometry><cylinder radius="0.03" length="0.01"/></geometry></collision>
+        <inertial>
+            <mass value="0.01"/>
+            <origin xyz="0 0 0"/>
+            <inertia ixx="2.33e-06" ixy="0.0" ixz="0.0" iyy="2.33e-06" iyz="0.0" izz="4.5e-06"/>
+        </inertial>
+    </link>
+
+    <joint name="servo_wheel_r3" type="continuous">
+        <parent link="servo_link3"/>
+        <child link="wheel_r3"/>
+        <origin xyz="0 -0.055 -0.04" rpy="1.57 0 0"/>
+        <axis xyz="0 0 1"/>
+    </joint>
+    <link name="wheel_r3">
+        <visual>
+            <geometry><cylinder radius="0.03" length="0.01"/></geometry>
+            <material name="blue"><color rgba="0 0 1 1"/></material>
+        </visual>
+        <collision><geometry><cylinder radius="0.03" length="0.01"/></geometry></collision>
+        <inertial>
+            <mass value="0.01"/>
+            <origin xyz="0 0 0"/>
+            <inertia ixx="2.33e-06" ixy="0.0" ixz="0.0" iyy="2.33e-06" iyz="0.0" izz="4.5e-06"/>
+        </inertial>
+    </link>
+
+    <!-- Joint 3: S3 → gear3 (revolute) -->
+    <joint name="servo_joint3" type="revolute">
+        <parent link="servo_link3"/>
+        <child link="gear_link3"/>
+        <origin xyz="0.1 0 0"/>
+        <axis xyz="0 0 1"/>
+        <limit lower="-3.14" upper="3.14"/>
+    </joint>
+    <link name="gear_link3">
+        <visual>
+            <geometry><cylinder radius="0.05" length="0.1"/></geometry>
+            <material name="white"><color rgba="1 1 1 1"/></material>
+        </visual>
+        <collision><geometry><cylinder radius="0.05" length="0.1"/></geometry></collision>
+        <inertial>
+            <mass value="0.005"/>
+            <origin xyz="0 0 0"/>
+            <inertia ixx="7.29e-06" ixy="0.0" ixz="0.0" iyy="7.29e-06" iyz="0.0" izz="6.25e-06"/>
+        </inertial>
+    </link>
+
+    <!-- Fixed: gear3 → S4 -->
+    <joint name="gear_joint3" type="fixed">
+        <parent link="gear_link3"/>
+        <child link="servo_link4"/>
+        <origin xyz="0.1 0 0"/>
+    </joint>
+
+    <!-- ===================== SEGMENT 4 ===================== -->
+    <link name="servo_link4">
+        <visual>
+            <geometry><box size="0.1 0.1 0.1"/></geometry>
+            <material name="black"><color rgba="0 0 0 1"/></material>
+        </visual>
+        <collision><geometry><box size="0.1 0.1 0.1"/></geometry></collision>
+        <inertial>
+            <mass value="0.3"/>
+            <origin xyz="0 0 0"/>
+            <inertia ixx="0.0005" ixy="0.0" ixz="0.0" iyy="0.0005" iyz="0.0" izz="0.0005"/>
+        </inertial>
+    </link>
+
+    <joint name="servo_wheel_l4" type="continuous">
+        <parent link="servo_link4"/>
+        <child link="wheel_l4"/>
+        <origin xyz="0 0.055 -0.04" rpy="-1.57 0 0"/>
+        <axis xyz="0 0 1"/>
+    </joint>
+    <link name="wheel_l4">
+        <visual>
+            <geometry><cylinder radius="0.03" length="0.01"/></geometry>
+            <material name="blue"><color rgba="0 0 1 1"/></material>
+        </visual>
+        <collision><geometry><cylinder radius="0.03" length="0.01"/></geometry></collision>
+        <inertial>
+            <mass value="0.01"/>
+            <origin xyz="0 0 0"/>
+            <inertia ixx="2.33e-06" ixy="0.0" ixz="0.0" iyy="2.33e-06" iyz="0.0" izz="4.5e-06"/>
+        </inertial>
+    </link>
+
+    <joint name="servo_wheel_r4" type="continuous">
+        <parent link="servo_link4"/>
+        <child link="wheel_r4"/>
+        <origin xyz="0 -0.055 -0.04" rpy="1.57 0 0"/>
+        <axis xyz="0 0 1"/>
+    </joint>
+    <link name="wheel_r4">
+        <visual>
+            <geometry><cylinder radius="0.03" length="0.01"/></geometry>
+            <material name="blue"><color rgba="0 0 1 1"/></material>
+        </visual>
+        <collision><geometry><cylinder radius="0.03" length="0.01"/></geometry></collision>
+        <inertial>
+            <mass value="0.01"/>
+            <origin xyz="0 0 0"/>
+            <inertia ixx="2.33e-06" ixy="0.0" ixz="0.0" iyy="2.33e-06" iyz="0.0" izz="4.5e-06"/>
+        </inertial>
+    </link>
+
+    <!-- Joint 4: S4 → gear4 (revolute) -->
+    <joint name="servo_joint4" type="revolute">
+        <parent link="servo_link4"/>
+        <child link="gear_link4"/>
+        <origin xyz="0.1 0 0"/>
+        <axis xyz="0 0 1"/>
+        <limit lower="-3.14" upper="3.14"/>
+    </joint>
+    <link name="gear_link4">
+        <visual>
+            <geometry><cylinder radius="0.05" length="0.1"/></geometry>
+            <material name="white"><color rgba="1 1 1 1"/></material>
+        </visual>
+        <collision><geometry><cylinder radius="0.05" length="0.1"/></geometry></collision>
+        <inertial>
+            <mass value="0.005"/>
+            <origin xyz="0 0 0"/>
+            <inertia ixx="7.29e-06" ixy="0.0" ixz="0.0" iyy="7.29e-06" iyz="0.0" izz="6.25e-06"/>
+        </inertial>
+    </link>
+
+    <!-- Fixed: gear4 → S5 -->
+    <joint name="gear_joint4" type="fixed">
+        <parent link="gear_link4"/>
+        <child link="servo_link5"/>
+        <origin xyz="0.1 0 0"/>
+    </joint>
+
+    <!-- ===================== SEGMENT 5 (tail) ===================== -->
+    <link name="servo_link5">
+        <visual>
+            <geometry><box size="0.1 0.1 0.1"/></geometry>
+            <material name="black"><color rgba="0 0 0 1"/></material>
+        </visual>
+        <collision><geometry><box size="0.1 0.1 0.1"/></geometry></collision>
+        <inertial>
+            <mass value="0.3"/>
+            <origin xyz="0 0 0"/>
+            <inertia ixx="0.0005" ixy="0.0" ixz="0.0" iyy="0.0005" iyz="0.0" izz="0.0005"/>
+        </inertial>
+    </link>
+
+    <joint name="servo_wheel_l5" type="continuous">
+        <parent link="servo_link5"/>
+        <child link="wheel_l5"/>
+        <origin xyz="0 0.055 -0.04" rpy="-1.57 0 0"/>
+        <axis xyz="0 0 1"/>
+    </joint>
+    <link name="wheel_l5">
+        <visual>
+            <geometry><cylinder radius="0.03" length="0.01"/></geometry>
+            <material name="blue"><color rgba="0 0 1 1"/></material>
+        </visual>
+        <collision><geometry><cylinder radius="0.03" length="0.01"/></geometry></collision>
+        <inertial>
+            <mass value="0.01"/>
+            <origin xyz="0 0 0"/>
+            <inertia ixx="2.33e-06" ixy="0.0" ixz="0.0" iyy="2.33e-06" iyz="0.0" izz="4.5e-06"/>
+        </inertial>
+    </link>
+
+    <joint name="servo_wheel_r5" type="continuous">
+        <parent link="servo_link5"/>
+        <child link="wheel_r5"/>
+        <origin xyz="0 -0.055 -0.04" rpy="1.57 0 0"/>
+        <axis xyz="0 0 1"/>
+    </joint>
+    <link name="wheel_r5">
+        <visual>
+            <geometry><cylinder radius="0.03" length="0.01"/></geometry>
+            <material name="blue"><color rgba="0 0 1 1"/></material>
+        </visual>
+        <collision><geometry><cylinder radius="0.03" length="0.01"/></geometry></collision>
+        <inertial>
+            <mass value="0.01"/>
+            <origin xyz="0 0 0"/>
+            <inertia ixx="2.33e-06" ixy="0.0" ixz="0.0" iyy="2.33e-06" iyz="0.0" izz="4.5e-06"/>
+        </inertial>
+    </link>
+
+    <!-- Joint 5: S5 → gear5 (revolute) -->
+    <joint name="servo_joint5" type="revolute">
+        <parent link="servo_link5"/>
+        <child link="gear_link5"/>
+        <origin xyz="0.1 0 0"/>
+        <axis xyz="0 0 1"/>
+        <limit lower="-3.14" upper="3.14"/>
+    </joint>
+    <link name="gear_link5">
+        <visual>
+            <geometry><cylinder radius="0.05" length="0.1"/></geometry>
+            <material name="white"><color rgba="1 1 1 1"/></material>
+        </visual>
+        <collision><geometry><cylinder radius="0.05" length="0.1"/></geometry></collision>
+        <inertial>
+            <mass value="0.005"/>
+            <origin xyz="0 0 0"/>
+            <inertia ixx="7.29e-06" ixy="0.0" ixz="0.0" iyy="7.29e-06" iyz="0.0" izz="6.25e-06"/>
+        </inertial>
+    </link>
+
+</robot>
+
